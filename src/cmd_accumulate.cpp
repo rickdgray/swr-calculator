@@ -33,8 +33,8 @@ swr::cli::command_schema accumulate_schema() {
     s.example_invocation =
         "drawdown accumulate --balance 100000 --contribution 3000 \\\n"
         "    --target 1000000 --portfolio \"us_stocks:80;us_bonds:20;\"\n"
-        "  drawdown accumulate -b 519000 -mc 5083 -tg 2500000 "
-        "-p \"us_stocks:80;us_bonds:20;\" -a 33";
+        "  drawdown accumulate -b 500000 -mc 5000 -tg 2500000 "
+        "-p \"us_stocks:80;us_bonds:20;\" -a 30";
 
     s.flags = {
         {"balance",         "b",  FlagGroup::REQUIRED, FlagKind::VALUE,

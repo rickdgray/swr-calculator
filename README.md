@@ -311,14 +311,14 @@ Given a retirement target and a horizon, find the lump sum you need today so tha
 "I want $1M in 20 years — how much do I need now?" (short flags):
 
 ```
-drawdown coast --target 1000000 --years 20 --portfolio "us_stocks:80;us_bonds:20;"
+drawdown coast -tg 1000000 -y 20 -p "us_stocks:80;us_bonds:20;"
 ```
 
 Derive years from current age and retirement age:
 
 ```
 drawdown coast --target 2500000 \
-    --current-age 33 --retirement-age 50 \
+    --current-age 30 --retirement-age 50 \
     --portfolio "us_stocks:80;us_bonds:20;" \
     --target-success 90
 ```
@@ -348,7 +348,7 @@ drawdown coast --target 1000000 --years 20 \
 | `-a` | `--current-age <float>` | `0` | Current age (used with `--retirement-age` to derive years) |
 | `-ra` | `--retirement-age <int>` | `0` | Retirement age (used with `--current-age` to derive years) |
 | `-b` | `--balance <dollars>` | `0` | If set, skip solving and report probability at this balance |
-| `-i` | `--inflation <series>` | `us_inflation` | Inflation series |
+| `-i` | `--inflation <series>` | `us_inflation` | Name of an inflation series (embedded or user-supplied) |
 | `-r` | `--rebalance <method>` | `yearly` | `none` \| `monthly` \| `yearly` |
 | `-t` | `--target-success <pct>` | `80` | Target success rate. The solver finds the lowest balance that meets this. |
 | `-j` | `--json` | — | Emit JSON instead of text |
@@ -358,8 +358,8 @@ drawdown coast --target 1000000 --years 20 \
 
 | Short | Long | Default | Meaning |
 |---|---|---|---|
-| `-sy` | `--start-year <year>` | `0` | Earliest historical backtest start year |
-| `-ey` | `--end-year <year>` | `0` | Latest historical backtest start year |
+| `-sy` | `--start-year <year>` | `0` | Earliest historical backtest start year (`0` = use full data) |
+| `-ey` | `--end-year <year>` | `0` | Latest historical backtest start year (`0` = use full data) |
 | `-smb` | `--search-max-balance <dollars>` | `0` | Upper bound for binary search (`0` = `2 × target`) |
 | `-bt` | `--balance-tolerance <dollars>` | `100` | Binary-search stopping tolerance |
 
@@ -374,17 +374,16 @@ Given a current balance and a fixed monthly contribution (constant in real, infl
 "I have $100K and add $3K/month — how long to $1M?" (short flags):
 
 ```
-drawdown accumulate --balance 100000 --contribution 3000 \
-    --target 1000000 --portfolio "us_stocks:80;us_bonds:20;"
+drawdown accumulate -b 100000 -mc 3000 -tg 1000000 -p "us_stocks:80;us_bonds:20;"
 ```
 
 With current age to project the year you'll reach the target:
 
 ```
-drawdown accumulate --balance 519000 --contribution 5083 \
+drawdown accumulate --balance 500000 --contribution 5000 \
     --target 2500000 \
     --portfolio "us_stocks:80;us_bonds:20;" \
-    --current-age 33
+    --current-age 30
 ```
 
 Using a 90% success target:
@@ -411,7 +410,7 @@ drawdown accumulate --balance 100000 --contribution 3000 \
 
 | Short | Long | Default | Meaning |
 |---|---|---|---|
-| `-i` | `--inflation <series>` | `us_inflation` | Inflation series |
+| `-i` | `--inflation <series>` | `us_inflation` | Name of an inflation series (embedded or user-supplied) |
 | `-r` | `--rebalance <method>` | `yearly` | `none` \| `monthly` \| `yearly` |
 | `-t` | `--target-success <pct>` | `80` | Target success rate. The solver returns the first year that hits this. |
 | `-a` | `--current-age <float>` | `0` | Current age. If set, output includes the projected age you reach the target. |
@@ -422,8 +421,8 @@ drawdown accumulate --balance 100000 --contribution 3000 \
 
 | Short | Long | Default | Meaning |
 |---|---|---|---|
-| `-sy` | `--start-year <year>` | `0` | Earliest historical backtest start year |
-| `-ey` | `--end-year <year>` | `0` | Latest historical backtest start year |
+| `-sy` | `--start-year <year>` | `0` | Earliest historical backtest start year (`0` = use full data) |
+| `-ey` | `--end-year <year>` | `0` | Latest historical backtest start year (`0` = use full data) |
 | `-my` | `--max-years <int>` | `60` | Maximum years to scan before giving up |
 
 ## Output formats
@@ -434,7 +433,7 @@ All six commands support three output modes. `--json` and `--csv` are mutually e
 |---|---|---|
 | text | *(default)* | Human-readable `Inputs` / `Results` / `Notes` sections |
 | JSON | `--json` | Flat JSON object: `{ "command": ..., "inputs": ..., "results": ..., "notes": [...] }`. Snake-case keys, dollars as floats (no `$` prefix), percentages as floats (e.g. `80.4`, not `"80.4%"`) |
-| CSV | `--csv` | Per-historical-start-year tabular detail with columns `start_year,start_month,success,terminal_value,total_withdrawn,worst_duration_months`. Preceded by `#`-prefixed comment lines describing the scenario |
+| CSV | `--csv` | Per-historical-start-year tabular detail, preceded by `#`-prefixed comment lines describing the scenario. Withdrawal commands emit columns `start_year,start_month,success,terminal_value,total_withdrawn,worst_duration_months`; `coast` and `accumulate` emit `start_year,reached_target,terminal_value` |
 
 ## Data sources
 
@@ -486,7 +485,7 @@ A tagged release (`v*` tag pushed to GitHub) builds portable binaries for all th
 
 ## Background
 
-This tool was forked from [Baptiste Wicht's swr-calculator](https://github.com/wichtounet/swr-calculator) and reshaped around three point-query commands suitable for ad-hoc retirement planning rather than analytical sweep tables.
+This tool was forked from [Baptiste Wicht's swr-calculator](https://github.com/wichtounet/swr-calculator) and reshaped around point-query commands suitable for ad-hoc retirement planning rather than analytical sweep tables.
 
 The methodology and historical-backtesting approach trace back to the *Trinity Study* (Cooley, Hubbard, Walz 1998) and its many updates. See [thepoorswiss.com/updated-trinity-study](https://thepoorswiss.com/updated-trinity-study/) for an accessible overview.
 

@@ -34,7 +34,7 @@ swr::cli::command_schema coast_schema() {
     s.example_invocation =
         "drawdown coast --target 1000000 --years 20 "
         "--portfolio \"us_stocks:80;us_bonds:20;\"\n"
-        "  drawdown coast --target 2500000 --current-age 33 --retirement-age 50 \\\n"
+        "  drawdown coast --target 2500000 --current-age 30 --retirement-age 50 \\\n"
         "    --portfolio \"us_stocks:80;us_bonds:20;\" --target-success 90";
 
     s.flags = {
